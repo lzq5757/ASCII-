@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ASCII 码表 | 0 - 127</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 36px 16px 80px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(1200px 600px at 50% -10%, #152238, #0b1220 60%);
+    color: #e2e8f0; min-height: 100vh;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: .5px; }
+  h1 span { color: #38bdf8; }
+  .sub { color: #8fa3bb; font-size: 13px; margin-bottom: 22px; }
+
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  input[type=search] {
+    flex: 1 1 240px; padding: 10px 14px; border-radius: 10px;
+    border: 1px solid #22314a; background: #111c2e; color: #e2e8f0;
+    font-size: 14px; outline: none; transition: .15s;
+  }
+  input[type=search]:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56,189,248,.15); }
+  .btns { display: flex; gap: 8px; }
+  .btns button {
+    padding: 9px 16px; border-radius: 999px; border: 1px solid #22314a;
+    background: #111c2e; color: #8fa3bb; font-size: 13px; cursor: pointer; transition: .15s;
+  }
+  .btns button:hover { color: #e2e8f0; border-color: #38506f; }
+  .btns button.active { background: #38bdf8; border-color: #38bdf8; color: #062033; font-weight: 600; }
+
+  .count { color: #64748b; font-size: 12px; margin-bottom: 10px; }
+
+  .tablewrap { border: 1px solid #1c2941; border-radius: 14px; overflow: hidden; background: #0e1828; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  thead th {
+    background: #16233a; color: #8fa3bb; font-weight: 600; font-size: 12px;
+    letter-spacing: .5px; text-align: left; padding: 11px 14px;
+    border-bottom: 1px solid #1c2941; white-space: nowrap;
+  }
+  tbody td { padding: 8px 14px; border-bottom: 1px solid #141f33; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #16233a; }
+  .dec { color: #cbd5e1; font-variant-numeric: tabular-nums; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #7dd3fc; }
+  .ch {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 17px; color: #fbbf24; text-align: center; width: 70px;
+  }
+  .ch.dim { color: #3c506b; font-size: 14px; }
+  /* 说明栏统一颜色，控制字符与可打印字符一致 */
+  .name { color: #a9bbd0; font-size: 13px; }
+  .ws { display: inline-block; width: 14px; height: 14px; vertical-align: -2px;
+        border: 1px dashed #64748b; border-radius: 3px; }
+  @media (max-width: 680px) {
+    thead th:nth-child(3), tbody td:nth-child(3),
+    thead th:nth-child(4), tbody td:nth-child(4) { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ASCII <span>码表</span></h1>
+  <div class="sub">0 – 127 标准 ASCII 字符集 · 可搜索、可筛选</div>
+
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="搜索：65 / 0x41 / 01000001 / A / 大写字母 ...">
+    <div class="btns">
+      <button class="active" data-mode="all">全部</button>
+      <button data-mode="print">可打印</button>
+      <button data-mode="ctrl">控制字符</button>
+    </div>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>十进制</th><th>十六进制</th><th>八进制</th><th>二进制</th><th style="text-align:center">字符</th><th>说明</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const names = {
+  0:'空字符 NUL', 1:'标题开始 SOH', 2:'正文开始 STX', 3:'正文结束 ETX',
+  4:'传输结束 EOT', 5:'询问 ENQ', 6:'确认 ACK', 7:'响铃 BEL',
+  8:'退格 BS', 9:'水平制表符 HT (Tab)', 10:'换行 LF', 11:'垂直制表符 VT',
+  12:'换页 FF', 13:'回车 CR', 14:'移出 SO', 15:'移入 SI',
+  16:'数据链路转义 DLE', 17:'设备控制1 DC1', 18:'设备控制2 DC2', 19:'设备控制3 DC3',
+  20:'设备控制4 DC4', 21:'否定确认 NAK', 22:'同步空闲 SYN', 23:'传输块结束 ETB',
+  24:'取消 CAN', 25:'介质结束 EM', 26:'替换 SUB', 27:'转义 ESC',
+  28:'文件分隔符 FS', 29:'组分隔符 GS', 30:'记录分隔符 RS', 31:'单元分隔符 US',
+  32:'空格 SPACE',
+  33:'感叹号 !', 34:'双引号 "', 35:'井号 #', 36:'美元符 $', 37:'百分号 %',
+  38:'和号 &', 39:'单引号 \'', 40:'左圆括号 (', 41:'右圆括号 )', 42:'星号 *',
+  43:'加号 +', 44:'逗号 ,', 45:'连字符 -', 46:'句点 .', 47:'斜杠 /',
+  58:'冒号 :', 59:'分号 ;', 60:'小于号 <', 61:'等号 =', 62:'大于号 >', 63:'问号 ?',
+  64:'at 符号 @',
+  91:'左方括号 [', 92:'反斜杠 \\', 93:'右方括号 ]', 94:'脱字符 ^', 95:'下划线 _',
+  96:'反引号 `',
+  123:'左花括号 {', 124:'竖线 |', 125:'右花括号 }', 126:'波浪号 ~',
+  127:'删除 DEL'
+};
+for (let d = 48; d <= 57; d++)  names[d] = '数字 ' + String.fromCharCode(d);
+for (let d = 65; d <= 90; d++)  names[d] = '大写字母 ' + String.fromCharCode(d);
+for (let d = 97; d <= 122; d++) names[d] = '小写字母 ' + String.fromCharCode(d);
+
+const DATA = Array.from({ length: 128 }, (_, i) => ({
+  dec : i,
+  hex : i.toString(16).toUpperCase().padStart(2, '0'),
+  oct : i.toString(8).padStart(3, '0'),
+  bin : i.toString(2).padStart(8, '0'),
+  char: (i >= 32 && i !== 127) ? String.fromCharCode(i) : '',
+  name: names[i] || '',
+  ctrl: (i < 32 || i === 127)
+}));
+
+const tbody  = document.getElementById('tbody');
+const countEl = document.getElementById('count');
+const searchEl = document.getElementById('search');
+const esc = s => s.replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let mode = 'all', query = '';
+
+function render() {
+  const q = query.trim().toLowerCase();
+  let html = '', n = 0;
+
+  for (const r of DATA) {
+    if (mode === 'ctrl'  && !r.ctrl) continue;
+    if (mode === 'print' &&  r.ctrl) continue;
+    if (q) {
+      const hay = [r.dec, r.hex, r.oct, r.bin, r.char, r.name].join(' ').toLowerCase();
+      if (!hay.includes(q)) continue;
+    }
+    n++;
+
+    let chCell;
+    if (r.ctrl)        chCell = '<span class="dim">·</span>';
+    else if (r.char === ' ') chCell = '<span class="ws"></span>';
+    else               chCell = esc(r.char);
+
+    html += `<tr>
+      <td class="dec">${r.dec}</td>
+      <td class="mono">0x${r.hex}</td>
+      <td class="mono">${r.oct}</td>
+      <td class="mono">${r.bin}</td>
+      <td class="ch${r.ctrl ? ' dim' : ''}">${chCell}</td>
+      <td class="name">${esc(r.name)}</td>
+    </tr>`;
+  }
+
+  tbody.innerHTML = n ? html
+    : `<tr><td colspan="6" style="text-align:center;padding:36px;color:#64748b">没有匹配的结果</td></tr>`;
+  countEl.textContent = `显示 ${n} 条 / 共 128 条`;
+}
+
+document.querySelectorAll('.btns button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.btns button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    render();
+  });
+});
+
+searchEl.addEventListener('input', e => { query = e.target.value; render(); });
+
+render();
+</script>
+</body>
+</html>
